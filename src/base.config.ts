@@ -12,6 +12,7 @@ import getFeatures from '@dojo/webpack-contrib/static-build-loader/getFeatures';
 
 const IgnorePlugin = require('webpack/lib/IgnorePlugin');
 const AutoRequireWebpackPlugin = require('auto-require-webpack-plugin');
+const DojoWebpackPlugin = require('dojo-webpack-plugin');
 const slash = require('slash');
 
 const basePath = process.cwd();
@@ -126,6 +127,7 @@ function importTransformer(basePath: string, bundles: any = {}) {
 }
 
 export default function webpackConfigFactory(args: any): WebpackConfiguration {
+	const loaderConfig = args['dojo-loader-config'];
 	const extensions = args.legacy ? ['.ts', '.tsx', '.js'] : ['.ts', '.tsx', '.mjs', '.js'];
 	const compilerOptions = args.legacy ? {} : { target: 'es6', module: 'esnext' };
 	const features = args.legacy ? args.features : { ...(args.features || {}), ...getFeatures('chrome') };
@@ -246,6 +248,10 @@ export default function webpackConfigFactory(args: any): WebpackConfiguration {
 			}),
 			new webpack.NamedChunksPlugin(),
 			new webpack.NamedModulesPlugin(),
+			loaderConfig &&
+				new DojoWebpackPlugin({
+					loaderConfig
+				}),
 			args.locale &&
 				new I18nPlugin({
 					defaultLocale: args.locale,

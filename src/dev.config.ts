@@ -1,4 +1,4 @@
-import baseConfigFactory, { mainEntry, packageName } from './base.config';
+import baseConfigFactory, { mainEntry, packageName, removeEmpty } from './base.config';
 import { WebAppManifest } from './interfaces';
 import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as fs from 'fs';
@@ -24,7 +24,7 @@ function webpackConfig(args: any): webpack.Configuration {
 	const assetsDir = path.join(process.cwd(), 'assets');
 	const assetsDirExists = fs.existsSync(assetsDir);
 
-	config.plugins = [
+	config.plugins = removeEmpty([
 		...plugins,
 		assetsDirExists && new CopyWebpackPlugin([{ from: assetsDir, to: path.join(outputPath, 'assets') }]),
 		new ManifestPlugin(),
