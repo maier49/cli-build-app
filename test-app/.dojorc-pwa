@@ -1,5 +1,12 @@
 {
 	"build-app": {
+		"dojo-loader-config": {
+			"baseUrl": "node_modules",
+			"has": {
+				"dojo-config-api": 0,
+				"dom-addeventlistener": 1
+			}
+		}
 		"locale": "en",
 		"supportedLocales": [ "es" ],
 		"features": {

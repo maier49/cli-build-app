@@ -2,6 +2,7 @@ import has from '@dojo/framework/has/has';
 import App from './App';
 import * as css from './app.m.css';
 import './Bar';
+import { toDom } from 'dojo/dom-construct';
 import LazyApp from './LazyApp';
 
 '!has("bar")';
@@ -31,10 +32,17 @@ if (process.env.NODE_ENV === 'production') {
 div.textContent = `Built with Build Time Render: ${!!div.getAttribute('hasBtr')}
 Currently Rendered by BTR: ${has('build-time-render')}`;
 
+const dojoDiv = toDom('<div>This div was renderd by Dojo 1</div>');
+
+dojoDiv.classList.add(...css.root.split(' '));
 div.classList.add(...css.root.split(' '));
 const root = document.getElementById('app');
 if (div.parentNode === null) {
 	root!.appendChild(div);
+}
+
+if (dojoDiv.parentNode === null) {
+	root!.appendChild(dojoDiv);
 }
 
 const appRoot = document.getElementById('app-root')!;
