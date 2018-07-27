@@ -267,6 +267,28 @@ Example:
 }
 ```
 
+#### `dojoLoaderConfig`: {}
+
+An optional object providing [configuration for a Dojo 1 build](https://dojotoolkit.org/documentation/tutorials/1.10/build/index.html). If provided, this config will be used to create a Dojo 1 build
+within the Webpack build, allowing Dojo 1 code to be used in a modern Dojo application. By default the build will assume a browser environment, so in order to work in a node environment `host-browser`
+should be set to `0` in the Dojo 1 `has` config. Additionally, if using `cli-test-intern` and running in node, you will need to set the `legacyDojo` argument in `.dojorc` to `true` for `cli-test-intern`.
+
+Example:
+
+```
+{
+	"build-app": {
+		"dojoLoaderConfig": {
+			"baseUrl": "node_modules",
+			"has": {
+				"dojo-config-api": 0,
+				"host-browser": 0
+			}
+		}
+	}
+}
+```
+
 ## How do I contribute?
 
 We appreciate your interest! Please see the [Dojo Meta Repository](https://github.com/dojo/meta#readme) for the Contributing Guidelines. This repository uses [prettier](https://prettier.io/) for code style and is configured with a pre-commit hook to automatically fix formatting issues on staged `.ts` files before performing the commit.

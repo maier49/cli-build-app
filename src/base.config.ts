@@ -127,7 +127,7 @@ function importTransformer(basePath: string, bundles: any = {}) {
 }
 
 export default function webpackConfigFactory(args: any): WebpackConfiguration {
-	const loaderConfig = args['dojo-loader-config'];
+	const loaderConfig = args.dojoLoaderConfig;
 	const extensions = args.legacy ? ['.ts', '.tsx', '.js'] : ['.ts', '.tsx', '.mjs', '.js'];
 	const compilerOptions = args.legacy ? {} : { target: 'es6', module: 'esnext' };
 	const features = args.legacy ? args.features : { ...(args.features || {}), ...getFeatures('chrome') };
