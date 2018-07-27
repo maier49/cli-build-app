@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'production') {
 div.textContent = `Built with Build Time Render: ${!!div.getAttribute('hasBtr')}
 Currently Rendered by BTR: ${has('build-time-render')}`;
 
-const dojoDiv = toDom('<div>This div was renderd by Dojo 1</div>');
+const dojoDiv = toDom('<div>This div was rendered by Dojo 1</div>');
 
 dojoDiv.classList.add(...css.root.split(' '));
 div.classList.add(...css.root.split(' '));
