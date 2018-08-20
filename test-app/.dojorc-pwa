@@ -1,10 +1,18 @@
 {
 	"build-app": {
 		"dojoLoaderConfig": {
-			"baseUrl": "node_modules",
+			"baseUrl": ".",
+			"packages": [
+				{
+					"name": "dojo",
+					"location": "node_modules/dojo",
+					"lib": "."
+				}
+			],
 			"has": {
 				"dojo-config-api": 0
-			}
+			},
+			"async": true
 		},
 		"locale": "en",
 		"supportedLocales": [ "es" ],
