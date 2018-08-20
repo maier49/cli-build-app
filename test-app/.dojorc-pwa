@@ -5,7 +5,7 @@
 			"has": {
 				"dojo-config-api": 0
 			}
-		}
+		},
 		"locale": "en",
 		"supportedLocales": [ "es" ],
 		"features": {
