@@ -270,20 +270,20 @@ export default function webpackConfigFactory(args: any): WebpackConfiguration {
 			// `file` uses the pattern `loaderPath!filePath`, hence the regex test
 			noParse: (file: string) => assetsDirPattern.test(file),
 			rules: removeEmpty([
-				{
-					test: indexHtmlPattern,
-					use: {
-						loader: 'html-loader',
-						options: {
-							attrs: ['link:href', 'img:src', 'script:src']
-						}
-					}
-				},
-				{
-					test: /\.(css|js)$/,
-					issuer: indexHtmlPattern,
-					loader: 'file-loader?hash=sha512&digest=hex&name=[name].[hash:base64:8].[ext]'
-				},
+				// {
+				// 	test: indexHtmlPattern,
+				// 	use: {
+				// 		loader: 'html-loader',
+				// 		options: {
+				// 			attrs: ['link:href', 'img:src', 'script:src']
+				// 		}
+				// 	}
+				// },
+				// {
+				// 	test: /\.(css|js)$/,
+				// 	issuer: indexHtmlPattern,
+				// 	loader: 'file-loader?hash=sha512&digest=hex&name=[name].[hash:base64:8].[ext]'
+				// },
 				tsLint && {
 					include: allPaths,
 					test: /\.ts$/,
