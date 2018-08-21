@@ -47,7 +47,7 @@ function getUMDCompatLoader(options: { bundles?: { [key: string]: string[] } }) 
 			imports(module: string, context: string) {
 				const filePath = path.relative(basePath, path.join(context, module));
 				let chunkName = slash(filePath);
-				Object.keys(bundles).some((name) => {
+				Object.keys(bundles).some(name => {
 					if (bundles[name].indexOf(slash(filePath)) > -1) {
 						chunkName = name;
 						return true;
@@ -80,7 +80,7 @@ function getLocalIdent(
 	return hash.replace(new RegExp('[^a-zA-Z0-9\\-_\u00A0-\uFFFF]', 'g'), '-').replace(/^((-?[0-9])|--)/, '_$1');
 }
 
-const removeEmpty = (items: any[]) => items.filter((item) => item);
+const removeEmpty = (items: any[]) => items.filter(item => item);
 
 const banner = `
 [Dojo](https://dojo.io/)
@@ -142,6 +142,12 @@ export default function webpackConfigFactory(args: any): WebpackConfiguration {
 	);
 
 	const customTransformers: any[] = [];
+
+	loaderConfig.has = loaderConfig.has || {};
+	const legacyFeatures = features || {};
+	Object.keys(legacyFeatures).map(feature => {
+		loaderConfig.has[feature] = legacyFeatures[feature] ? 1 : 0;
+	});
 
 	if (lazyModules.length > 0) {
 		customTransformers.push(registryTransformer(basePath, lazyModules));
@@ -330,6 +336,17 @@ export default function webpackConfigFactory(args: any): WebpackConfiguration {
 				},
 				{
 					test: /\.js(x)?$/,
+					exclude: loaderConfig
+						? [
+								...(loaderConfig.packages || []).map(
+									({ name, location }: { location: string; name: string }) => {
+										return new RegExp(`${loaderConfig.baseUrl}/${location || name}/`);
+									}
+								),
+								new RegExp(`${loaderConfig.baseUrl}/dojo/`),
+								new RegExp(`${loaderConfig.baseUrl}/dojo-util/`)
+							]
+						: [],
 					use: removeEmpty([
 						features && {
 							loader: '@dojo/webpack-contrib/static-build-loader',

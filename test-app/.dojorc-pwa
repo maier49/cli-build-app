@@ -10,7 +10,8 @@
 				}
 			],
 			"has": {
-				"dojo-config-api": 0
+				"dojo-config-api": 0,
+				"foo": 1
 			},
 			"async": true
 		},

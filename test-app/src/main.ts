@@ -1,5 +1,6 @@
 import has from '@dojo/framework/has/has';
 import App from './App';
+import { foo } from 'dojoModule/dojoModule';
 import * as css from './app.m.css';
 import './Bar';
 import { toDom } from 'dojo/dom-construct';
@@ -10,6 +11,8 @@ import LazyApp from './LazyApp';
 if (has('foo')) {
 	console.log('foo');
 }
+
+console.log(`Foo: ${foo()}`);
 
 const btr = has('build-time-render');
 
