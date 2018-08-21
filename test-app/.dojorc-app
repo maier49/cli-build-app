@@ -29,9 +29,6 @@
 			"lazy": [
 				"src/LazyWidget"
 			]
-		},
-		"build-time-render": {
-			"root": "app"
 		}
 	}
 }

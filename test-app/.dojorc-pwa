@@ -47,9 +47,6 @@
 					{ "urlPattern": "/api", "strategy": "networkFirst" }
 				]
 			}
-		},
-		"build-time-render": {
-			"root": "app"
 		}
 	}
 }
