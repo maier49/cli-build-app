@@ -1,4 +1,4 @@
-define(['dojo/has'], function() {
+define(['dojo/has'], function(has) {
 	if (has('foo')) {
 		return {
 			foo() {

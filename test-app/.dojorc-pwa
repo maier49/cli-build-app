@@ -7,6 +7,10 @@
 					"name": "dojo",
 					"location": "node_modules/dojo",
 					"lib": "."
+				},
+				{
+					"name": "dojoModule",
+					"location": "dojo"
 				}
 			],
 			"has": {
@@ -47,6 +51,9 @@
 					{ "urlPattern": "/api", "strategy": "networkFirst" }
 				]
 			}
+		},
+		"build-time-render": {
+			"root": "app"
 		}
 	}
 }

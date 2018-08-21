@@ -7,6 +7,10 @@
 					"name": "dojo",
 					"location": "node_modules/dojo",
 					"lib": "."
+				},
+				{
+					"name": "dojoModule",
+					"location": "dojo"
 				}
 			],
 			"has": {
@@ -29,6 +33,9 @@
 			"lazy": [
 				"src/LazyWidget"
 			]
+		},
+		"build-time-render": {
+			"root": "app"
 		}
 	}
 }
