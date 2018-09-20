@@ -40,7 +40,7 @@ function getLibraryName(name: string) {
 		.replace(/\s+/g, '_');
 }
 
-const libraryName = packageName ? getLibraryName(packageName) : mainEntry;
+export const libraryName = packageName ? getLibraryName(packageName) : mainEntry;
 
 function getUMDCompatLoader(options: { bundles?: { [key: string]: string[] } }) {
 	const { bundles = {} } = options;
@@ -308,7 +308,7 @@ export default function webpackConfigFactory(args: any): WebpackConfiguration {
 			new webpack.NamedChunksPlugin(),
 			new webpack.NamedModulesPlugin(),
 			new WrapperPlugin({
-				test: /(main.*(\.js$))|(all.*(\.js$))/,
+				test: /(main.*(\.js$))/,
 				footer: `typeof define === 'function' && define.amd && require(['${libraryName}']);`
 			}),
 			args.locale &&
