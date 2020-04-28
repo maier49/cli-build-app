@@ -87,14 +87,14 @@ function build(config: webpack.Configuration, args: any) {
 	const compiler = createCompiler(config);
 	const spinner = ora('building').start();
 	return new Promise<webpack.Compiler>((resolve, reject) => {
-		compiler.run((err, stats) => {
+		compiler.run(async (err, stats) => {
 			spinner.stop();
 			if (err) {
 				reject(err);
 			}
 			if (stats) {
 				const runningMessage = args.serve ? `Listening on port ${args.port}...` : '';
-				const hasErrors = logger(stats, config, runningMessage, args);
+				const hasErrors = await logger(stats, config, runningMessage, args);
 				if (hasErrors) {
 					reject({});
 					return;

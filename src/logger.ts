@@ -12,7 +12,12 @@ const columns = require('cli-columns');
 const stripAnsi = require('strip-ansi');
 const version = jsonFile.readFileSync(path.join(pkgDir.sync(__dirname), 'package.json')).version;
 
-export default function logger(stats: any, config: any, runningMessage: string = '', args: any = {}): boolean {
+export default async function logger(
+	stats: any,
+	config: any,
+	runningMessage: string = '',
+	args: any = {}
+): Promise<boolean> {
 	const singleConfig = Array.isArray(config) ? config[0] : config;
 	const outputPath = singleConfig.output.path;
 	const loggerStats = stats.toJson({ warningsFilter });
@@ -21,7 +26,7 @@ export default function logger(stats: any, config: any, runningMessage: string =
 	let chunkMap: { [chunk: string]: any };
 	const excludeChunks = /(^bootstrap$)|(^runtime\/)/;
 	if (args.mode === 'dist') {
-		chunkMap = analyzeBundles(stats, config, {
+		chunkMap = await analyzeBundles(stats, config, {
 			analyzerMode: 'static',
 			openAnalyzer: false,
 			generateStatsFile: true,
