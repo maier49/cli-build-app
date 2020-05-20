@@ -16,13 +16,15 @@ import baseConfigFactory, {
 	mainEntry,
 	InsertScriptPlugin,
 	packageName,
-	libraryName
+	libraryName,
+	ModuleNoModulePlugin
 } from './base.config';
 import { WebAppManifest } from './interfaces';
 
 const CompressionPlugin = require('compression-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
+const BabelEsmPlugin = require('babel-esm-plugin');
 
 const banner = `
 [Dojo](https://dojo.io/)
@@ -99,6 +101,7 @@ function webpackConfig(args: any): webpack.Configuration {
 			template: 'src/index.html',
 			cache: false
 		}),
+		new ModuleNoModulePlugin(),
 		args.externals &&
 			args.externals.dependencies &&
 			new ExternalLoaderPlugin({
@@ -162,6 +165,12 @@ function webpackConfig(args: any): webpack.Configuration {
 		if (plugin instanceof MiniCssExtractPlugin) {
 			return new MiniCssExtractPlugin({
 				filename: args.omitHash ? '[name].bundle.css' : '[name].[contenthash].bundle.css'
+			});
+		}
+		if (plugin instanceof BabelEsmPlugin) {
+			return new BabelEsmPlugin({
+				chunkFilename: args.omitHash ? '[name].bundle.js' : '[name].[chunkhash].modern.bundle.js',
+				filename: args.omitHash ? '[name].bundle.js' : '[name].[chunkhash].modern.bundle.js'
 			});
 		}
 		return plugin;

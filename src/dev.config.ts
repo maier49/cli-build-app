@@ -3,7 +3,8 @@ import baseConfigFactory, {
 	mainEntry,
 	packageName,
 	InsertScriptPlugin,
-	libraryName
+	libraryName,
+	ModuleNoModulePlugin
 } from './base.config';
 import { WebAppManifest } from './interfaces';
 import * as HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -53,6 +54,7 @@ function webpackConfig(args: any): webpack.Configuration {
 			template: 'src/index.html',
 			cache: false
 		}),
+		new ModuleNoModulePlugin(),
 		args.externals &&
 			args.externals.dependencies &&
 			new ExternalLoaderPlugin({
