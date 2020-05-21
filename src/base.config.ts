@@ -207,32 +207,32 @@ export class ModuleNoModulePlugin {
 				'ModuleNoModulePlugin',
 				(data: any, cb: Function) => {
 					// find all the bootstraps
-					data.body = [];
-					Object.keys(compilation.assets).forEach((asset) => {
-						if (/^bootstrap\..*\.bundle.js$/.test(asset)) {
-							if (asset.indexOf('modern') >= 0) {
-								// modern
-								data.body.push({
-									tagName: 'script',
-									closeTag: true,
-									attributes: {
-										src: asset,
-										type: 'module'
-									}
-								});
-							} else {
-								// legacy
-								data.body.push({
-									tagName: 'script',
-									closeTag: true,
-									attributes: {
-										src: asset,
-										nomodule: 'true'
-									}
-								});
-							}
-						}
-					});
+					// data.body = [];
+					// Object.keys(compilation.assets).forEach((asset) => {
+					// 	if (/^bootstrap\..*\.bundle.js$/.test(asset)) {
+					// 		if (asset.indexOf('modern') >= 0) {
+					// 			// modern
+					// 			data.body.push({
+					// 				tagName: 'script',
+					// 				closeTag: true,
+					// 				attributes: {
+					// 					src: asset,
+					// 					type: 'module'
+					// 				}
+					// 			});
+					// 		} else {
+					// 			// legacy
+					// 			data.body.push({
+					// 				tagName: 'script',
+					// 				closeTag: true,
+					// 				attributes: {
+					// 					src: asset,
+					// 					nomodule: 'true'
+					// 				}
+					// 			});
+					// 		}
+					// 	}
+					// });
 					cb(null, data);
 				}
 			);
