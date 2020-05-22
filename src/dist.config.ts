@@ -20,11 +20,11 @@ import baseConfigFactory, {
 	ModuleNoModulePlugin
 } from './base.config';
 import { WebAppManifest } from './interfaces';
+import BabelEsmPlugin from '@dojo/webpack-contrib/babel-esm-plugin';
 
 const CompressionPlugin = require('compression-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
-const BabelEsmPlugin = require('babel-esm-plugin');
 
 const banner = `
 [Dojo](https://dojo.io/)
