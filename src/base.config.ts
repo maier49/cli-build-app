@@ -645,6 +645,21 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 					include: allPaths,
 					test: /\.ts(x)?$/,
 					use: removeEmpty([
+						{
+							loader: 'babel-loader',
+							options: {
+								presets: [
+									[
+										'@babel/preset-env',
+										{
+											targets: {
+												ie: 11
+											}
+										}
+									]
+								]
+							}
+						},
 						features && {
 							loader: '@dojo/webpack-contrib/static-build-loader',
 							options: { features, staticOnly }
@@ -663,6 +678,21 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 					// incorrect imports to continue working.
 					type: 'javascript/auto',
 					use: removeEmpty([
+						{
+							loader: 'babel-loader',
+							options: {
+								presets: [
+									[
+										'@babel/preset-env',
+										{
+											targets: {
+												ie: 11
+											}
+										}
+									]
+								]
+							}
+						},
 						features && {
 							loader: '@dojo/webpack-contrib/static-build-loader',
 							options: { features, staticOnly }
@@ -672,31 +702,27 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 				{
 					test: /\.js(x)?$/,
 					use: removeEmpty([
+						{
+							loader: 'babel-loader',
+							options: {
+								presets: [
+									[
+										'@babel/preset-env',
+										{
+											targets: {
+												ie: 11
+											}
+										}
+									]
+								]
+							}
+						},
 						features && {
 							loader: '@dojo/webpack-contrib/static-build-loader',
 							options: { features, staticOnly }
 						},
 						'umd-compat-loader'
 					])
-				},
-				{
-					test: /.js$/,
-					exclude: /(node_modules)/,
-					use: {
-						loader: 'babel-loader',
-						options: {
-							presets: [
-								[
-									'@babel/preset-env',
-									{
-										targets: {
-											browsers: ['last 2 versions', 'safari >= 7']
-										}
-									}
-								]
-							]
-						}
-					}
 				},
 				{
 					include: [/@dojo/, /globalize/],
