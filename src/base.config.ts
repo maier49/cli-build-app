@@ -207,8 +207,11 @@ export class ModuleNoModulePlugin {
 			compilation.hooks.htmlWebpackPluginAlterAssetTags.tapAsync(
 				'ModuleNoModulePlugin',
 				(data: any, cb: Function) => {
+					data.body = data.body.filter(
+						(tag: any) =>
+							!tag.attributes || !tag.attributes.src || !/^bootstrap\..*js$/.test(tag.attributes.src)
+					);
 					// find all the bootstraps
-					data.body = [];
 					Object.keys(compilation.assets).forEach((asset) => {
 						if (/^bootstrap\..*js$/.test(asset)) {
 							if (asset.indexOf('modern') >= 0) {
@@ -659,7 +662,8 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 										}
 									]
 								],
-								plugins: [['@babel/plugin-transform-runtime', { regenerator: true }]]
+								plugins: [['@babel/plugin-transform-runtime', { regenerator: true }]],
+								sourceType: 'unambiguous'
 							}
 						},
 						// features && {
@@ -693,7 +697,8 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 										}
 									]
 								],
-								plugins: [['@babel/plugin-transform-runtime', { regenerator: true }]]
+								plugins: [['@babel/plugin-transform-runtime', { regenerator: true }]],
+								sourceType: 'unambiguous'
 							}
 						}
 						// features && {
@@ -718,7 +723,8 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 										}
 									]
 								],
-								plugins: [['@babel/plugin-transform-runtime', { regenerator: true }]]
+								plugins: [['@babel/plugin-transform-runtime', { regenerator: true }]],
+								sourceType: 'unambiguous'
 							}
 						},
 						// features && {
