@@ -14,6 +14,7 @@ import * as minimatch from 'minimatch';
 import * as ManifestPlugin from 'webpack-manifest-plugin';
 import * as globby from 'globby';
 
+const { ESBuildPlugin } = require('esbuild-loader');
 const CssUrlRelativePlugin = require('css-url-relative-plugin');
 const postcssPresetEnv = require('postcss-preset-env');
 const postcssImport = require('postcss-import');
@@ -208,7 +209,6 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 	const singleBundle = args.singleBundle || isTest || isExperimentalSpeed;
 	const watch = args.watch;
 	const extensions = isLegacy ? ['.ts', '.tsx', '.js'] : ['.ts', '.tsx', '.mjs', '.js'];
-	const compilerOptions = isLegacy ? {} : { target: 'es2017', module: 'esnext', downlevelIteration: false };
 	let features = isLegacy ? args.features : { ...(args.features || {}), ...getFeatures('modern') };
 	features = {
 		...features,
@@ -274,15 +274,15 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 		customTransformers.push(importTransformer(basePath, args.bundles));
 	}
 
-	const tsLoaderOptions: any = {
-		onlyCompileBundledFiles: true,
-		instance: 'dojo',
-		transpileOnly: isExperimentalSpeed,
-		compilerOptions,
-		getCustomTransformers() {
-			return { before: customTransformers };
-		}
-	};
+	// const tsLoaderOptions: any = {
+	// 	onlyCompileBundledFiles: true,
+	// 	instance: 'dojo',
+	// 	transpileOnly: isExperimentalSpeed,
+	// 	compilerOptions,
+	// 	getCustomTransformers() {
+	// 		return { before: customTransformers };
+	// 	}
+	// };
 
 	const postcssImportConfig = {
 		filter: (path: string) => {
@@ -458,6 +458,7 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 		devtool: 'source-map',
 		watchOptions: { ignored: /node_modules/ },
 		plugins: removeEmpty([
+			new ESBuildPlugin(),
 			new StyleLintPlugin({
 				config: {
 					rules: {
@@ -606,8 +607,10 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 						},
 						isLegacy && getUMDCompatLoader({ bundles: args.bundles }),
 						{
-							loader: 'ts-loader',
-							options: tsLoaderOptions
+							loader: 'esbuild-loader',
+							options: {
+								loader: 'tsx'
+							}
 						}
 					])
 				},
