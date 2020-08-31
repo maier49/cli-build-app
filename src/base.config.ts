@@ -450,9 +450,6 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 		},
 		resolveLoader: {
 			modules: [path.resolve(__dirname, 'node_modules'), 'node_modules']
-			// alias: {
-			// 	text: 'noop-loader'
-			// }
 		},
 		resolve: {
 			modules: [basePath, path.join(basePath, 'node_modules')],
