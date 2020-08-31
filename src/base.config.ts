@@ -24,7 +24,8 @@ const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
 const createHash = require('webpack/lib/util/createHash');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
-import BabelEsmPlugin from '@dojo/webpack-contrib/babel-esm-plugin';
+import AdditionalCompilationPlugin from '@dojo/webpack-contrib/additional-compilation-plugin';
+import { isRegExp } from 'util';
 
 const stylelint = require('stylelint');
 const StyleLintPlugin = require('stylelint-webpack-plugin');
@@ -252,9 +253,9 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 	const isTest = args.mode === 'unit' || args.mode === 'functional' || args.mode === 'test';
 	const singleBundle = args.singleBundle || isTest || isExperimentalSpeed;
 	const watch = args.watch;
-	const extensions = isLegacy ? ['.ts', '.tsx', '.js'] : ['.ts', '.tsx', '.mjs', '.js'];
-	const compilerOptions = isLegacy ? {} : { target: 'es2017', module: 'esnext', downlevelIteration: false };
-	let features = isLegacy ? args.features : { ...(args.features || {}), ...getFeatures('modern') };
+	const extensions = ['.ts', '.tsx', '.mjs', '.js'];
+	const compilerOptions = {};
+	let features = args.features;
 	features = {
 		...features,
 		'dojo-debug': false,
@@ -315,10 +316,6 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 		chunkPercentageThreshold = 40;
 	}
 
-	if (!isLegacy && !singleBundle) {
-		customTransformers.push(importTransformer(basePath, args.bundles));
-	}
-
 	const tsLoaderOptions: any = {
 		onlyCompileBundledFiles: true,
 		instance: 'dojo',
@@ -351,7 +348,7 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 	};
 
 	const postcssPresetConfig = {
-		browsers: isLegacy ? ['last 2 versions', 'ie >= 10'] : ['last 2 versions'],
+		browsers: ['last 2 versions', 'ie >= 10'],
 		insertBefore: {
 			'color-mod-function': colorToColorMod
 		},
@@ -360,7 +357,7 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 			'nesting-rules': true
 		},
 		autoprefixer: {
-			grid: isLegacy
+			grid: true
 		}
 	};
 
@@ -452,10 +449,10 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 			path: path.resolve('./output')
 		},
 		resolveLoader: {
-			modules: [path.resolve(__dirname, 'node_modules'), 'node_modules'],
-			alias: {
-				text: 'noop-loader'
-			}
+			modules: [path.resolve(__dirname, 'node_modules'), 'node_modules']
+			// alias: {
+			// 	text: 'noop-loader'
+			// }
 		},
 		resolve: {
 			modules: [basePath, path.join(basePath, 'node_modules')],
@@ -592,9 +589,75 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 					files: watchExtraFiles
 				}),
 			new ManifestPlugin(),
-			new BabelEsmPlugin({
+			new AdditionalCompilationPlugin({
 				chunkFilename: '[name].modern.js',
-				filename: '[name].modern.js'
+				filename: '[name].modern.js',
+				loaderOptions: [
+					{
+						name: 'ts-loader',
+						optionCallback(options: any) {
+							return {
+								...options,
+								compilerOptions: { target: 'es2017', module: 'esnext', downlevelIteration: false },
+								getCustomTransformers() {
+									const before = [...customTransformers];
+									if (!singleBundle) {
+										before.push(importTransformer(basePath, args.bundles));
+									}
+
+									return {
+										before
+									};
+								}
+							};
+						}
+					},
+					{
+						name: '@dojo/webpack-contrib/static-build-loader',
+						optionCallback(options: any) {
+							return {
+								...options,
+								features: {
+									...options.features,
+									...getFeatures('modern')
+								}
+							};
+						}
+					},
+					{
+						name: 'postcss-loader?sourceMap',
+						optionCallback(options: any) {
+							return {
+								...options,
+								plugins: [
+									postcssImport(postcssImportConfig),
+									postcssPresetEnv({
+										...postcssPresetConfig,
+										browsers: ['last 2 versions'],
+										autoprefixer: { grid: false }
+									})
+								]
+							};
+						}
+					}
+				],
+				ruleOptions: [
+					{
+						matcher(rule: any) {
+							return !rule.enforce && isRegExp(rule.test) && rule.test.source === '\\.ts(x)?$';
+						},
+						use: [
+							{
+								loader: '@dojo/webpack-contrib/static-build-loader',
+								options: { features, staticOnly }
+							},
+							{
+								loader: 'ts-loader',
+								options: tsLoaderOptions
+							}
+						]
+					}
+				]
 			}),
 			new CssUrlRelativePlugin({ root: args.base || '/' })
 		]),
@@ -653,27 +716,10 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 					test: /\.ts(x)?$/,
 					use: removeEmpty([
 						{
-							loader: 'babel-loader',
-							options: {
-								presets: [
-									[
-										'@babel/preset-env',
-										{
-											targets: {
-												ie: 11
-											}
-										}
-									]
-								],
-								plugins: [['@babel/plugin-transform-runtime', { regenerator: true }]],
-								sourceType: 'unambiguous'
-							}
+							loader: '@dojo/webpack-contrib/static-build-loader',
+							options: { features, staticOnly }
 						},
-						// features && {
-						// 	loader: '@dojo/webpack-contrib/static-build-loader',
-						// 	options: { features, staticOnly }
-						// },
-						isLegacy && getUMDCompatLoader({ bundles: args.bundles }),
+						getUMDCompatLoader({ bundles: args.bundles }),
 						{
 							loader: 'ts-loader',
 							options: tsLoaderOptions
@@ -686,56 +732,22 @@ export default function webpackConfigFactory(args: any): webpack.Configuration {
 					// (e.g., do not use `import from` for cjs modules). Setting the type to `javascript/auto` allows
 					// incorrect imports to continue working.
 					type: 'javascript/auto',
-					use: removeEmpty([
+					use: [
 						{
-							loader: 'babel-loader',
-							options: {
-								presets: [
-									[
-										'@babel/preset-env',
-										{
-											targets: {
-												ie: 11
-											}
-										}
-									]
-								],
-								plugins: [['@babel/plugin-transform-runtime', { regenerator: true }]],
-								sourceType: 'unambiguous'
-							}
+							loader: '@dojo/webpack-contrib/static-build-loader',
+							options: { features, staticOnly }
 						}
-						// features && {
-						// 	loader: '@dojo/webpack-contrib/static-build-loader',
-						// 	options: { features, staticOnly }
-						// }
-					])
+					]
 				},
 				{
 					test: /\.js(x)?$/,
-					use: removeEmpty([
+					use: [
 						{
-							loader: 'babel-loader',
-							options: {
-								presets: [
-									[
-										'@babel/preset-env',
-										{
-											targets: {
-												ie: 11
-											}
-										}
-									]
-								],
-								plugins: [['@babel/plugin-transform-runtime', { regenerator: true }]],
-								sourceType: 'unambiguous'
-							}
+							loader: '@dojo/webpack-contrib/static-build-loader',
+							options: { features, staticOnly }
 						},
-						// features && {
-						// 	loader: '@dojo/webpack-contrib/static-build-loader',
-						// 	options: { features, staticOnly }
-						// },
 						'umd-compat-loader'
-					])
+					]
 				},
 				{
 					include: [/@dojo/, /globalize/],

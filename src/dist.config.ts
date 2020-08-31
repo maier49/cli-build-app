@@ -20,7 +20,7 @@ import baseConfigFactory, {
 	ModuleNoModulePlugin
 } from './base.config';
 import { WebAppManifest } from './interfaces';
-import BabelEsmPlugin from '@dojo/webpack-contrib/babel-esm-plugin';
+import AdditionalCompilationPlugin from '@dojo/webpack-contrib/additional-compilation-plugin';
 
 const CompressionPlugin = require('compression-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -167,8 +167,9 @@ function webpackConfig(args: any): webpack.Configuration {
 				filename: args.omitHash ? '[name].bundle.css' : '[name].[contenthash].bundle.css'
 			});
 		}
-		if (plugin instanceof BabelEsmPlugin) {
-			return new BabelEsmPlugin({
+		if (plugin instanceof AdditionalCompilationPlugin) {
+			return new AdditionalCompilationPlugin({
+				...plugin.options,
 				chunkFilename: args.omitHash ? '[name].bundle.js' : '[name].[chunkhash].modern.bundle.js',
 				filename: args.omitHash ? '[name].bundle.js' : '[name].[chunkhash].modern.bundle.js'
 			});
